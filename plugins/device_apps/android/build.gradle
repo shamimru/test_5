@@ -1,0 +1,39 @@
+group 'fr.g123k.deviceapps'
+version '1.0-SNAPSHOT'
+
+buildscript {
+    repositories {
+        google()
+        // jcenter() // avoid if not needed
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.0.2'
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        // jcenter() // avoid if not needed
+    }
+}
+
+apply plugin: 'com.android.library'
+
+android {
+    namespace 'fr.g123k.deviceapps' // ✅ REQUIRED
+    compileSdkVersion 33 // ✅ updated from 30
+
+    defaultConfig {
+        minSdkVersion 21 // ✅ minimum needed for most plugins now
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    lintOptions {
+        disable 'InvalidPackage'
+    }
+}
+
+dependencies {
+    implementation 'androidx.annotation:annotation:1.2.0'
+}
