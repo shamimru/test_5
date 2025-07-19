@@ -3,7 +3,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:test_5/DeviceApp/AppUsagesDetails.dart';
 import 'package:test_5/DeviceApp/Device_App.dart';
+import 'package:usage_stats/usage_stats.dart';
 
 import 'CameraWesome.dart';
 import 'ContactList/GetMyContactList.dart';
@@ -24,6 +26,15 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   NotificationUtilities.initialize();
+
+// for usage_app package
+  // grant usage permission - opens Usage Settings
+  UsageStats.grantUsagePermission();
+
+  // check if permission is granted
+  bool? isPermission = await UsageStats.checkUsagePermission();
+
+  // bool isPermission = UsageStats.checkUsagePermission() as bool;
   runApp(const MyApp());
 }
 
@@ -144,7 +155,9 @@ class _MyHomePageState extends State<MyHomePage> {
             
             ElevatedButton(onPressed: (){
               Get.toNamed("/devices");
-            }, child: Text("get all devices"))
+            }, child: Text("get all devices")),
+
+
           ],
         ),
       ),
