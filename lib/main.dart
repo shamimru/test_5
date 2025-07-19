@@ -3,8 +3,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:location/location.dart';
 import 'package:test_5/DeviceApp/AppUsagesDetails.dart';
 import 'package:test_5/DeviceApp/Device_App.dart';
+import 'package:test_5/MyLocation/MyLocation.dart';
 import 'package:usage_stats/usage_stats.dart';
 
 import 'CameraWesome.dart';
@@ -35,12 +37,26 @@ void main() async {
   bool? isPermission = await UsageStats.checkUsagePermission();
 
   // bool isPermission = UsageStats.checkUsagePermission() as bool;
+
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   static GlobalKey<NavigatorState> navigatorKey= GlobalKey();
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
 
   // This widget is the root of your application.
   @override
@@ -57,8 +73,10 @@ class MyApp extends StatelessWidget {
         GetPage(name: "/getContacts", page: () => Getmycontactlist()),
         GetPage(name: "/hiddenCamera", page: () => Hiddencamera()),
         GetPage(name: "/devices", page: () => MyDeviceApp()),
+        GetPage(name: "/location", page: () => Mylocation()),
+
       ],
-      navigatorKey: navigatorKey,
+      navigatorKey: MyApp.navigatorKey,
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
@@ -156,6 +174,10 @@ class _MyHomePageState extends State<MyHomePage> {
             ElevatedButton(onPressed: (){
               Get.toNamed("/devices");
             }, child: Text("get all devices")),
+
+            ElevatedButton(onPressed: (){
+              Get.toNamed("/location");
+            }, child: Text("get Location")),
 
 
           ],
