@@ -38,9 +38,7 @@ class _MylocationState extends State<Mylocation> {
     }
 
     locationData = await location.getLocation();
-    print(
-      "Device location is ${locationData!.latitude} and ${locationData!.longitude}",
-    );
+    print("Device location is ${locationData!.latitude} and ${locationData!.longitude}");
 
     setState(() {
       isLoading = false;
@@ -49,6 +47,9 @@ class _MylocationState extends State<Mylocation> {
 
   @override
   Widget build(BuildContext context) {
+    final LatLng currentLocation = LatLng(locationData?.latitude ?? 0.0, locationData?.longitude ?? 0.0);
+    final LatLng nearbyLocation = LatLng(currentLocation.latitude + 0.001, currentLocation.longitude + 0.001);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Location"),
@@ -57,72 +58,83 @@ class _MylocationState extends State<Mylocation> {
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : Column(
-              children: [
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.6,
-                  child: FlutterMap(
-                    options: MapOptions(
-                      initialCenter: LatLng(
-                        locationData!.latitude!,
-                        locationData!.longitude!,
-                      ),
-                      initialZoom: 10,
-                      maxZoom: 50,
-                    ),
-                    children: <Widget>[
-                      TileLayer(
-                        urlTemplate:
-                            'https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png',
-                        subdomains: ['a', 'b', 'c'],
-                        tileProvider: NetworkTileProvider(
-                          headers: {
-                            'User-Agent':
-                                'YourAppName/1.0 (sahammeedd@gmail.com.com)', // <-- replace with real info
-                          },
+        children: [
+          Container(
+            height: MediaQuery.of(context).size.height * 0.6,
+            child: FlutterMap(
+              options: MapOptions(
+                initialCenter: LatLng(
+                  currentLocation.latitude + 0.0005,
+                  currentLocation.longitude + 0.0005,
+                ),
+                initialZoom: 15,
+                maxZoom: 18,
+              ),
+              children: <Widget>[
+
+                /// ✅ Map Tile
+                TileLayer(
+                  urlTemplate: "https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=DwTrAuK3lTCGk3wZBUwC",
+                  subdomains: ['a', 'b', 'c'],
+                  tileProvider: NetworkTileProvider(
+                    headers: {
+                      'User-Agent': 'YourAppName/1.0 (youremail@example.com)',
+                    },
+                  ),
+                ),
+
+                /// ✅ Marker Cluster with two markers
+                MarkerClusterLayerWidget(
+                  options: MarkerClusterLayerOptions(
+                    alignment: Alignment(1, 2),
+                    maxClusterRadius: 45,
+                    size: const Size(40, 40),
+                    markers: [
+                      /// 🔴 Current Location Marker
+                      Marker(
+                        width: 40,
+                        height: 40,
+                        point: currentLocation,
+                        child: const Icon(
+                          Icons.location_pin,
+                          color: Colors.red,
+                          size: 40,
                         ),
                       ),
 
-                      MarkerClusterLayerWidget(
-                        options: MarkerClusterLayerOptions(
-                          alignment: Alignment(1, 2),
-                          maxClusterRadius: 45,
-                          size: const Size(40, 40),
-                          markers: [
-                            Marker(
-                              width: 40,
-                              height: 40,
-                              point: LatLng(
-                                locationData!.latitude!,
-                                locationData!.longitude!,
-                              ),
-                              child: const Icon(
-                                Icons.location_pin,
-                                color: Colors.red,
-                                size: 40,
-                              ),
-                            ),
-                          ],
-                          builder: (context, markers) {
-                            return Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                color: Colors.blue,
-                              ),
-                              child: Center(
-                                child: Text(
-                                  markers.length.toString(),
-                                  style: const TextStyle(color: Colors.white),
-                                ),
-                              ),
-                            );
-                          },
+                      /// 🟢 Nearby Location Marker
+                      Marker(
+                        width: 40,
+                        height: 40,
+                        point: nearbyLocation,
+                        child: const Icon(
+                          Icons.description,
+                          color: Colors.green,
+                          size: 40,
                         ),
                       ),
                     ],
+                    builder: (context, markers) {
+                      return Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: Colors.blue,
+                        ),
+                        child: Center(
+                          child: Text(
+                            markers.length.toString(),
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
               ],
             ),
+          ),
+        ],
+      ),
     );
   }
 }
